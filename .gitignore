@@ -3,3 +3,5 @@
 !.gitignore
 !readme.md
 !*.ps1
+!_screenshots/
+!_screenshots/*

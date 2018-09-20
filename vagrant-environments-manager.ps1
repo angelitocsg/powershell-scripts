@@ -1,5 +1,3 @@
-
-
 $boxes = Get-ChildItem -Directory -n
 $global:input = ""
 
@@ -11,6 +9,7 @@ function Show-Menu {
     Write-Host ""
 
     Get-ChildItem -Directory -n | foreach -Begin {$i=0} -Process {
+        if ($_ -eq '_screenshots') { return }
         $i++
         " {0:D1}) Box => {1}" -f $i, $_
     }
