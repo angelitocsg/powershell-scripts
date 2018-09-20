@@ -1,14 +1,14 @@
 $boxes = Get-ChildItem -Directory -n
 $global:input = ""
 
-function Show-Menu {
-    cls
+function ShowMenu {
+    Clear-Host
     Write-Host ""
     $Title = 'Vagrant - Environments Manager'
     Write-Host " === $Title ========================"
     Write-Host ""
 
-    Get-ChildItem -Directory -n | foreach -Begin {$i=0} -Process {
+    Get-ChildItem -Directory -n | ForEach-Object -Begin { $i = 0 } -Process {
         if ($_ -eq '_screenshots') { return }
         $i++
         " {0:D1}) Box => {1}" -f $i, $_
@@ -19,13 +19,14 @@ function Show-Menu {
     $global:input = Read-Host " Please type a number or X to exit"
     $text = $global:input;
 
+    if ($text -eq '') { return }
     if ($text -eq 'x') { return }
 
     $boxName = $boxes[$text - 1];
-    Show-Actions $boxName
+    ShowActions $boxName
 }
 
-function Show-Actions($boxName) {
+function ShowActions($boxName) {
     Write-Host ""
     Write-Host " Selected-Box: $boxName"
     Write-Host ""
@@ -40,32 +41,47 @@ function Show-Actions($boxName) {
     $global:input = Read-Host " Please type a number or X to exit"
     $text = $global:input;
 
+    if ($text -eq '') { return }
     if ($text -eq 'x') { return }
 
-    Exec-Action $boxName $text
+    ExecAction $boxName $text
 }
 
-function Exec-Action($boxName, $action) {
+function ExecAction($boxName, $action) {
     Write-Host ""
     Write-Host " Selected-Box: $boxName"
     Write-Host " Selected-Action: $action"
     Write-Host ""
     Write-Host " Executing. Wait..."
-    cd $boxName
-    if ($action -eq 1) { vagrant up > run_up.log}
-    if ($action -eq 2) { vagrant up --provision  > run_up_provision.log}
-    if ($action -eq 3) { vagrant ssh}
-    if ($action -eq 4) { vagrant provision > run_provision.log}
-    if ($action -eq 5) { vagrant halt > run_halt.log }
+    Set-Location $boxName
+    if ($action -eq 1) {
+        Write-Host " > vagrant up"
+        vagrant up > run_up.log
+    }
+    if ($action -eq 2) {
+        Write-Host " > vagrant up --provision"
+        vagrant up --provision  > run_up_provision.log
+    }
+    if ($action -eq 3) {
+        Write-Host " > vagrant ssh"
+        vagrant ssh
+    }
+    if ($action -eq 4) {
+        Write-Host " > vagrant provision"
+        vagrant provision > run_provision.log
+    }
+    if ($action -eq 5) {
+        Write-Host " > vagrant halt"
+        vagrant halt > run_halt.log 
+    }
     Write-Host " Done!"
-    cd ..
+    Set-Location ..
     pause
 }
 
-do
-{
-    Show-Menu
+do {
+    ShowMenu
 }
 until ($global:input -eq 'x')
 
-cls
+Clear-Host
