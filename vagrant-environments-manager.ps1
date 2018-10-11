@@ -14,12 +14,17 @@ function ShowMenu {
         " {0:D1}) Box => {1}" -f $i, $_
     }
 
+    Write-Host " 0) vagrant global-status"
     Write-Host " X) Exit"
     Write-Host ""
     $global:input = Read-Host " Please type a number or X to exit"
     $text = $global:input;
 
     if ($text -eq '') { return }
+    if ($text -eq '0') {
+        ExecAction '-' 'vgs' 
+        return
+    }
     if ($text -eq 'x') { return }
 
     $boxName = $boxes[$text - 1];
@@ -53,14 +58,14 @@ function ExecAction($boxName, $action) {
     Write-Host " Selected-Action: $action"
     Write-Host ""
     Write-Host " Executing. Wait..."
-    Set-Location $boxName
+    if ($boxName -ne '-') { Set-Location $boxName }
     if ($action -eq 1) {
         Write-Host " > vagrant up"
-        vagrant up > run_up.log
+        vagrant up
     }
     if ($action -eq 2) {
         Write-Host " > vagrant up --provision"
-        vagrant up --provision  > run_up_provision.log
+        vagrant up --provision
     }
     if ($action -eq 3) {
         Write-Host " > vagrant ssh"
@@ -68,14 +73,18 @@ function ExecAction($boxName, $action) {
     }
     if ($action -eq 4) {
         Write-Host " > vagrant provision"
-        vagrant provision > run_provision.log
+        vagrant provision
     }
     if ($action -eq 5) {
         Write-Host " > vagrant halt"
-        vagrant halt > run_halt.log 
+        vagrant halt
+    }
+    if ($action -eq 'vgs') {
+        Write-Host " > vagrant global-status"
+        vagrant global-status
     }
     Write-Host " Done!"
-    Set-Location ..
+    if ($boxName -ne '-') { Set-Location .. }
     pause
 }
 
